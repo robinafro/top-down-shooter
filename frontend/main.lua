@@ -50,6 +50,8 @@ function love.update(dt)
         game.RunService:Trigger("Stepped")
 
         game.RunService:Trigger("Heartbeat")
+
+        game.RunService:Trigger("Network")
     end)
 
     if not success then

@@ -74,6 +74,7 @@ function RunService.new()
         RenderStepped = {Delta = 0, Last = 0, Async = false, NoPause = true, Functions = {}}, --// Run before rendering
         Stepped = {Delta = 0, Last = 0, Async = false, Functions = {}}, --// Run before physics
         Heartbeat = {Delta = 0, Last = 0, Async = true, Functions = {}}, --// Run after frame done
+        Network = {Delta = 0, Last = 0, Async = true, Functions = {}},
         Restart = {Delta = 0, Last = 0, Async = false, Functions = {}}
     }
 

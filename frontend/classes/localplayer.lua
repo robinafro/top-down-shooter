@@ -10,8 +10,9 @@ localplayer.aimVisualizerThickness = 1
 localplayer.aimVisualizerLength = 1000
 
 function localplayer:constructor(game)
-    self.super:constructor(game)
-
+    self.super.constructor(self, game)
+    self.super = self
+    
     self.visualizers = {
         aim = game:waitFor("objects"):create(),
     }
@@ -21,6 +22,29 @@ function localplayer:constructor(game)
     self.aimDirection = vector2()
 
     self.game = game
+
+    self.movementRemote = game:waitFor("remotes"):get("player_movement")
+
+    --// Login attributes
+    self.username = ""
+    self.authstring = ""
+    self.ready = false
+
+    local remote = self.game:waitFor("remotes"):get("login")
+
+    remote.received:connect(function(response)
+        if response.ok then
+            print("Logged in as " .. response.data.username)
+
+            self.username = response.data.username
+            self.authstring = response.data.authstring
+            self.ready = true
+
+            print(self)
+        else
+            print("Failed to login: " .. response.data)
+        end
+    end)
 end
 
 function localplayer:update(dt)
@@ -33,6 +57,14 @@ function localplayer:update(dt)
     local direction = (mousePosition - self.super.object.position):normalized()
 
     self.aimDirection = direction
+
+    self.movementRemote:fire({
+        authstring = self.authstring,
+        position = {
+            x = self.super.object.position.x,
+            y = self.super.object.position.y,
+        },
+    })
 end
 
 function localplayer:draw()
@@ -55,6 +87,14 @@ function localplayer:draw()
     visualizer.rotation = (startPos - endPos):angle()
     visualizer.position = (startPos + endPos) / 2
     visualizer.size = vector2((startPos - endPos):magnitude(), localplayer.aimVisualizerThickness)
+end
+
+function localplayer:login(username)
+    local remote = self.game:waitFor("remotes"):get("login")
+
+    remote:fire({
+        username = username,
+    })
 end
 
 return localplayer
